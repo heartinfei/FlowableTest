@@ -7,12 +7,16 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -23,7 +27,7 @@ import io.reactivex.schedulers.Schedulers;
 public class OrderActivity extends AppCompatActivity implements View.OnClickListener {
     private FlowableEmitter<Integer> emitter;
     private final FlowableOnSubscribe<Integer> flowable = (e) -> this.emitter = e;
-    private Disposable d;
+    private Subscription d;
 
     RecyclerView rlv;
     RAdapter adapter;
@@ -36,7 +40,7 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
         rlv.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RAdapter();
         rlv.setAdapter(adapter);
-        d = Flowable.create(flowable, BackpressureStrategy.BUFFER)
+        Flowable.create(flowable, BackpressureStrategy.BUFFER)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .map((s) -> {
@@ -46,15 +50,34 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
                 })
                 .onErrorReturnItem(-1)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((s) -> {
-                    Log.i("WTEST", "处理结果:" + s);
-                    //TODO: LiveData.postValue(s);
-                    if (s < 0) {
-                        return;
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        d = s;
+                        d.request(1);
                     }
-                    SBean sBean = new SBean("测试数据" + s, true, s);
-                    adapter.addItem(sBean);
-                    emitter.requested();
+
+                    @Override
+                    public void onNext(Integer s) {
+                        Log.i("WTEST", "处理结果:" + s);
+                        //TODO: LiveData.postValue(s);
+                        if (s < 0) {
+                            return;
+                        }
+                        SBean sBean = new SBean("测试数据" + s, true, s);
+                        adapter.addItem(sBean);
+                        d.request(1);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
                 });
     }
 
@@ -67,7 +90,7 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
         Log.i("WTEST", i + "");
         switch (v.getId()) {
             case R.id.btn_repeat:
-                int item = i%3;
+                int item = i % 3;
                 emitter.onNext(item);
                 break;
             case R.id.btn_add:
@@ -83,6 +106,6 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         emitter.onComplete();
-        d.dispose();
+        d.cancel();
     }
 }
