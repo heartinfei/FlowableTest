@@ -26,19 +26,23 @@ public class RAdapter extends RecyclerView.Adapter<RAdapter.VH> {
 //        dataList.add(new SBean("测试数据", true, 100000000));
     }
 
-    public void addItem(SBean s) {
+    public int addItem(SBean s) {
         clearStatus();
         Optional<SBean> o = Stream.of(dataList)
                 .filter((value) -> s.getId() == value.getId()).findFirst();
+        int position =0;
         if (Optional.empty().equals(o)) {
             dataList.add(s);
-            notifyItemInserted(dataList.size() - 1);
+            position = dataList.size() - 1;
+            notifyItemInserted(position);
         } else {
             SBean cache = o.get();
             cache.setCount(cache.getCount() + 1);
             cache.setChecked(true);
-            notifyItemChanged(dataList.indexOf(cache));
+            position = dataList.indexOf(cache);
+            notifyItemChanged(position);
         }
+        return position;
     }
 
     private void clearStatus() {

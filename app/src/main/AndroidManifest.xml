@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dianxiaohuo.flowabletest">
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,7 +17,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".OrderActivity" />
-        <activity android:name=".DebounceActivity"></activity>
+        <activity android:name=".DebounceActivity" />
+        <activity
+            android:name=".FullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_fullscreen"
+            android:theme="@style/FullscreenTheme" />
+        <activity android:name=".DisposeTestActivity"></activity>
     </application>
 
 </manifest>

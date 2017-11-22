@@ -43,7 +43,7 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
                 .observeOn(Schedulers.io())
                 .map((s) -> {
                     //TODO: some stuff
-                    Thread.sleep(1000);
+//                    Thread.sleep(1000);
                     return s;
                 })
                 .onErrorReturnItem(-1)
@@ -63,7 +63,9 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
                             return;
                         }
                         SBean sBean = new SBean("测试数据" + s, true, s);
-                        adapter.addItem(sBean);
+                        int p = adapter.addItem(sBean);
+//                        ((LinearLayoutManager) rlv.getLayoutManager()).scrollToPosition(p);
+                        rlv.smoothScrollToPosition(p);
                         d.request(1);
                     }
 
@@ -88,11 +90,13 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
         Log.i("WTEST", i + "");
         switch (v.getId()) {
             case R.id.btn_repeat:
-                int item = i % 3;
-                emitter.onNext(item);
+//                int item = i % 3;
+                emitter.onNext(50);
                 break;
             case R.id.btn_add:
-                emitter.onNext(i);
+                for (int j = 0; j < 100; j++) {
+                    emitter.onNext(j);
+                }
                 break;
             default:
         }
