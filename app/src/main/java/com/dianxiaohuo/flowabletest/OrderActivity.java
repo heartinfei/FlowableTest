@@ -37,6 +37,7 @@ public class OrderActivity extends AppCompatActivity implements View.OnClickList
         rlv = findViewById(R.id.rlv);
         rlv.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RAdapter();
+        adapter.notifyDataSetChanged();
         rlv.setAdapter(adapter);
         Flowable.create(flowable, BackpressureStrategy.BUFFER)
                 .subscribeOn(Schedulers.io())

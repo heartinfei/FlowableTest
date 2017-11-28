@@ -23,7 +23,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen"
             android:theme="@style/FullscreenTheme" />
-        <activity android:name=".DisposeTestActivity"></activity>
+        <activity android:name=".DisposeTestActivity" />
+        <activity android:name=".RecyAdapterTestActivity"></activity>
     </application>
 
 </manifest>
